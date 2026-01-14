@@ -58,12 +58,9 @@ while playgame != 'q':
         print('incorrect selection, pick a number in 3, 4 and 5')
         continue
     
+    total_game += 1
     if result == 'Win':
         score += 1
-        total_game += 1
-    else:
-        score += 0
-        total_game += 1
 
     print(f'Your score is {score}, and you have played a total of {total_game} game(s)')
     playgame = input('click any botton to play again, click q to quit\n'.upper())
