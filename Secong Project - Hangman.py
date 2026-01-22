@@ -1,5 +1,5 @@
 import random
-
+lives = 2
 #Create a dictionary containing a list of words and hints
 dictOfWords = {
     "pencil": "a writing material",
@@ -20,14 +20,14 @@ for words in dictOfWords.keys():
 
  
 # Print Instruction and Hint
-print("You have 3 lives.\n"
+print(f"You have {lives} lives.\n"
     "Hangman is a word-guessing game.\n"
     "Guess one letter at a time.\n"
     "Each wrong guess reduces your lives by 1.\n"
     "Try to guess the whole word before you run out of lives!".upper())
 
 #GamePlay Logic
-def gameplayLogic (*args):
+def gameplayLogic (lives):
     #Randomize word
     wordToGuess = random.choice(listOfWords)
     #Extracts the hint of the word and create dashes as placeholders for the word
@@ -37,8 +37,6 @@ def gameplayLogic (*args):
         wordPlaceholder.append("*") 
     
     print ("YOUR WORD IS", hint.upper() )  
-    
-    lives = 3
     guessedLetters = set()
     
     while lives > 0:
@@ -71,7 +69,6 @@ def gameplayLogic (*args):
         if "*" not in wordPlaceholder:
             print ("GAME WON!!")
             return 1
-            break 
 
         guessedLetters.add(playerInput)
 
@@ -86,8 +83,7 @@ score = 0
 totalGames = 0
 #Gameplay caller
 while gameStart != "q":
-    result = gameplayLogic()
-    
+    result = gameplayLogic(lives)
     totalGames += 1
     if result == 1:
         score += 1
