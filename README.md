@@ -72,3 +72,12 @@ The end goal is a FastAPI backend with a real database, built from a foundation 
 - **Language:** Python 3.x
 - **Phase 1–2:** Standard library only (`json`, `os`, `datetime`)
 - **Phase 3+:** FastAPI, Pydantic, PostgreSQL
+
+---
+
+## Related
+
+This repo is part of a broader set of projects being built in parallel:
+
+- **[mysquad-server](https://github.com/Adekunle-1/mysquad-server)** — Production FastAPI backend (where this is headed)
+- **[n8n-workflows](https://github.com/Adekunle-1/n8n-workflows)** — Automation layer built on top of it
