@@ -3,80 +3,89 @@ from task import Task
 
 class TaskManager:
 
-    def __init__(self):
+    def _load(self):
         data = load_tasks()
 
-        if not isinstance(data,list):
+        if not isinstance(data, list):
             data = []
-        
-        self.tasks = [Task(**task) for task in data]
+
+        return [Task(**task) for task in data]
+
+    def _save(self, tasks):
+        save_tasks([t.to_dict() for t in tasks])
 
     def list_tasks(self):
+        tasks = self._load()
+
         print("\nCurrent Tasks:")
 
-        if not self.tasks:
-            print("No tasks available")
-
-        for task in self.tasks:
-            print(task)
-
-    def add_task(self, title, priority):
-
-        if self.tasks:
-            new_id = max(task.id for task in self.tasks) + 1
-        else:
-            new_id = 1
-
-        task = Task (new_id,title,priority)
-
-        self.tasks.append(task)
-
-        save_tasks([t.to_dict() for t in self.tasks])
-
-        print("Task added successfully.")
-
-    def mark_complete(self, task_id):
-
-        for task in self.tasks:
-            if task.id == task_id:
-                task.status = "completed"
-                save_tasks([t.to_dict() for t in self.tasks])
-                print(f"Task {task_id} marked as completed.")
-                return
-        
-        print('Task not found.')
-
-    def delete_task(self, task_id):
-        
-        new_task = [task for task in self.tasks if task.id != task_id]
-
-        if len(new_task) == len(self.tasks):
-            print("Task not found.")
-            return
-        
-        self.tasks = new_task
-        save_tasks([t.to_dict() for t in self.tasks])
-
-        print("Task deleted successfully.")
-
-    def show_report(self):
-        
-        if not self.tasks:
+        if not tasks:
             print("No tasks available.")
             return
 
-        total = len(self.tasks)
-        completed = sum(1 for task in self.tasks if task.status == "completed")
+        for task in tasks:
+            print(task)
+
+    def add_task(self, title, priority):
+        tasks = self._load()
+
+        if tasks:
+            new_id = max(task.id for task in tasks) + 1
+        else:
+            new_id = 1
+
+        task = Task(new_id, title, priority)
+        tasks.append(task)
+
+        self._save(tasks)
+
+        print("Task added successfully.")        
+
+    def mark_complete(self, task_id):
+        tasks = self._load()
+
+        for task in tasks:
+            if task.id == task_id:
+                task.status = "completed"
+                self._save(tasks)
+                return True
+
+        return False
+
+    def delete_task(self, task_id):
+        tasks = self._load()
+
+        new_tasks = [task for task in tasks if task.id != task_id]
+
+        if len(new_tasks) == len(tasks):
+            return False
+
+        self._save(new_tasks)
+        return True
+    
+    def get_all_tasks(self):
+        tasks = self._load()
+        return [task.to_dict() for task in tasks]
+    
+    def show_report(self):
+        tasks = self._load()
+
+        if not tasks:
+            print("No tasks available.")
+            return
+
+        total = len(tasks)
+        completed = sum(1 for t in tasks if t.status == "completed")
         pending = total - completed
 
         print("\n--- Task Report ---")
-        print(f"Total tasks: {total}")
+        print(f"Total: {total}")
         print(f"Completed: {completed}")
         print(f"Pending: {pending}")
 
         priorities = {"low": 0, "medium": 0, "high": 0}
 
-        for task in self.tasks:
+        for task in tasks:
             priorities[task.priority] += 1
 
         print("\nPriority Breakdown:")

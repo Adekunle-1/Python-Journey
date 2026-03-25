@@ -33,7 +33,7 @@ def main():
             title = input('Enter task title: ').strip() #set title
             if not title:
                 print ('Title cannot be empty.')
-                return
+                continue
             
             priority = input("Enter priority (low, medium, high): ").lower() #set priority
             if priority not in ['low','medium','high']:

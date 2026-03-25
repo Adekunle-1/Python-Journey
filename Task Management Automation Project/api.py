@@ -1,35 +1,40 @@
 from fastapi import FastAPI, HTTPException
 from task_manager import TaskManager
+from schemas import TaskCreate
 
 app = FastAPI()
-
 manager = TaskManager()
 
 @app.get("/tasks")
 def get_tasks():
-    return [task.todict() for task in manager.tasks]
+    return manager.get_all_tasks()
 
 @app.post("/tasks")
-def create_tasks(title:str, priority:str):
-
-    if not title:
-        raise HTTPException(status_code=400, detail="Title cannot be empty")
+def create_tasks(task: TaskCreate):
     
     if priority not in ["low", "medium", "high"]:
         priority = "low"
 
-    manager.add_task(title,priority)
+    manager.add_task(task.title,task.priority)
     return {"message": "Task created successfully"}
 
 app.patch("/tasks/{task_id}")
 def complete_task(task_id:int):
 
-    manager.mark_complete(task_id)
+    success = manager.mark_complete(task_id)
+
+    if not success:
+        raise HTTPException(status_code=404, detail="Task not found")
+
     return {"message": "Task updated"}
 
 
 app.delete("/tasks/{task_id}")
 def delete_task(task_id:int):
 
-    manager.delete_task(task_id)
+    success = manager.delete_task(task_id)
+
+    if not success:
+        raise HTTPException(status_code=404, detail="Task not found")
+
     return {"message": "Task deleted"}
