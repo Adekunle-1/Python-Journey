@@ -1,24 +1,23 @@
-from storage import load_tasks, save_tasks
-from task import Task
+from db import get_connection
+from datetime import datetime
 
 class TaskManager:
 
-    def _load(self):
-        data = load_tasks()
+    def get_all_tasks(self):
+        conn = get_connection()
+        cursor = conn.cursor()
 
-        if not isinstance(data, list):
-            data = []
+        cursor.execute("SELECT * FROM tasks")
+        rows = cursor.fetchall()
 
-        return [Task(**task) for task in data]
+        conn.close()
 
-    def _save(self, tasks):
-        save_tasks([t.to_dict() for t in tasks])
-
+        return [dict(row) for row in rows]
+    
     def list_tasks(self):
-        tasks = self._load()
+        tasks = self.get_all_tasks()
 
         print("\nCurrent Tasks:")
-
         if not tasks:
             print("No tasks available.")
             return
@@ -27,47 +26,43 @@ class TaskManager:
             print(task)
 
     def add_task(self, title, priority):
-        tasks = self._load()
+        conn = get_connection()
+        cursor = conn.cursor()
 
-        if tasks:
-            new_id = max(task.id for task in tasks) + 1
-        else:
-            new_id = 1
-
-        task = Task(new_id, title, priority)
-        tasks.append(task)
-
-        self._save(tasks)
-
-        print("Task added successfully.")        
+        cursor.execute(""" 
+                       INSERT INTO tasks (title, priority, created_at) 
+                       VALUES (?,?,?)
+                       """, (title, priority, datetime.now().isoformat()))
+        
+        conn.commit()
+        conn.close()  
+        print ("Task Successfully Added)")   
 
     def mark_complete(self, task_id):
-        tasks = self._load()
+        conn = get_connection()
+        cursor = conn.cursor()
 
-        for task in tasks:
-            if task.id == task_id:
-                task.status = "completed"
-                self._save(tasks)
-                return True
+        cursor.execute("UPDATE tasks SET status = 'completed' WHERE id = ?", (task_id,))
 
-        return False
+        conn.commit()
+        updated = cursor.rowcount
+        conn.close()
+
+        return updated > 0
 
     def delete_task(self, task_id):
-        tasks = self._load()
+        conn = get_connection()
+        cursor = conn.cursor()
 
-        new_tasks = [task for task in tasks if task.id != task_id]
+        cursor.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
 
-        if len(new_tasks) == len(tasks):
-            return False
+        conn.commit()
+        deleted = cursor.rowcount
+        conn.close()
 
-        self._save(new_tasks)
-        return True
+        return deleted > 0
     
-    def get_all_tasks(self):
-        tasks = self._load()
-        return [task.to_dict() for task in tasks]
-    
-    def show_report(self):
+    """def show_report(self):
         tasks = self._load()
 
         if not tasks:
@@ -90,4 +85,4 @@ class TaskManager:
 
         print("\nPriority Breakdown:")
         for level, count in priorities.items():
-            print(f"{level.capitalize()}: {count}")
+            print(f"{level.capitalize()}: {count}")"""

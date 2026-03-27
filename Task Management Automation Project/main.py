@@ -1,6 +1,3 @@
-from storage import load_tasks, save_tasks, load_logs
-from datetime import datetime
-from logger import log_action
 from task_manager import TaskManager
 
 def id_input():
@@ -24,8 +21,7 @@ def main():
         print("2. List Tasks")
         print("3. Mark Complete")
         print("4. Delete Task")
-        print("5. Show Report")
-        print("6. Exit")
+        print("5. Exit")
 
         choice = input("Choose an option: ")
 
@@ -48,18 +44,19 @@ def main():
             task_id = id_input()
             if task_id is None:
                 continue
-            manager.mark_complete(task_id)
+
+            success = manager.mark_complete(task_id)
+            print("Done" if success else "Task not found")
         
         elif choice == "4":
             task_id = id_input()
             if task_id is None:
                 continue
-            manager.delete_task(task_id)
-        
+            
+            success = manager.delete_task(task_id)
+            print("Deleted" if success else "Task not found")
+
         elif choice == "5":
-            manager.show_report()
-        
-        elif choice == "6":
             print("Exiting...")
             break
         else:
