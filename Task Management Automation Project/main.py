@@ -1,4 +1,5 @@
 from task_manager import TaskManager
+from db import init_db
 
 def id_input():
     while True:
@@ -13,7 +14,9 @@ def id_input():
             print ('Invalid ID. Please enter a number or q to cancel.')
 
 def main():
+    init_db()
     manager = TaskManager() 
+    
 
     while True:
         print("\n--- Task Manager ---")
