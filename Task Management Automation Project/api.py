@@ -4,11 +4,13 @@ from schemas import TaskCreate
 from db import init_db
 
 app = FastAPI()
-manager = TaskManager()
 
 @app.on_event("startup")
 def startup():
     init_db()
+    
+manager = TaskManager()
+
 
 @app.get("/tasks")
 def get_tasks():
